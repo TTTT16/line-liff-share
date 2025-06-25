@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>แชร์ Flex Message</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+      text-align: center;
+    }
+
+    #flex-card {
+      display: inline-block;
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #flex-card img {
+      width: 100%;
+      max-width: 400px;
+      display: block;
+    }
+
+    #share {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00c300;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="flex-card">
+    <img src="https://www.i-pic.info/i/V5Cg1085001" alt="โปรโมชัน NJ234" id="promo-image">
+  </div>
+
+  <button id="share">แชร์ภาพนี้ไปที่แชต</button>
+
+  <!-- LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <!-- html2canvas -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <script>
+    async function main() {
+      await liff.init({ liffId: "2007549405-nKmo9DB8" });
+
+      document.getElementById("share").addEventListener("click", async () => {
+        const element = document.getElementById("flex-card");
+        const canvas = await html2canvas(element);
+        const dataUrl = canvas.toDataURL("image/png");
+
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], "promo.png", { type: "image/png" });
+
+        try {
+          await liff.shareTargetPicker([
+            {
+              type: "image",
+              originalContentUrl: URL.createObjectURL(file),
+              previewImageUrl: URL.createObjectURL(file)
+            },
+            {
+              type: "text",
+              text: "กดรับทุนฟรีที่นี่เลย 👉 https://lin.ee/khM2IKE"
+            }
+          ]);
+        } catch (err) {
+          alert("แชร์ไม่สำเร็จ: " + err.message);
+        }
+      });
+    }
+
+    main();
+  </script>
+</body>
+</html>
